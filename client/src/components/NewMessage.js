@@ -3,9 +3,8 @@ import React, { useState } from "react";
 function NewMessage({ currentUser, onAddMessage }) {
   const [body, setBody] = useState("");
 
-  function handleSubmit(e) {
+  const handleSubmit = (e) => {
     e.preventDefault();
-
     fetch("http://127.0.0.1:5555/messages", {
       method: "POST",
       headers: {
@@ -16,21 +15,21 @@ function NewMessage({ currentUser, onAddMessage }) {
         body: body,
       }),
     })
-      .then((r) => r.json())
+      .then((response) => response.json())
       .then((newMessage) => {
         onAddMessage(newMessage);
-        setBody("");
+        setBody(""); // Reset the input field
       });
-  }
+  };
 
   return (
-    <form className="new-message" onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit}>
       <input
         type="text"
-        name="body"
-        autoComplete="off"
         value={body}
         onChange={(e) => setBody(e.target.value)}
+        placeholder="Type your message here..."
+        required
       />
       <button type="submit">Send</button>
     </form>

@@ -7,52 +7,40 @@ import NewMessage from "./NewMessage";
 const testUser = { username: "Duane" };
 
 function App() {
-  const [isDarkMode, setIsDarkMode] = useState(true);
   const [messages, setMessages] = useState([]);
-  const [search, setSearch] = useState("");
+  const [isDarkMode, setIsDarkMode] = useState(true);
 
   useEffect(() => {
     fetch("http://127.0.0.1:5555/messages")
       .then((r) => r.json())
-      .then((messages) => setMessages(messages));
+      .then((data) => setMessages(data));
   }, []);
 
-  function handleAddMessage(newMessage) {
-    setMessages([...messages, newMessage]);
-  }
+  const handleAddMessage = (newMessage) => {
+    setMessages((prevMessages) => [...prevMessages, newMessage]);
+  };
 
-  function handleDeleteMessage(id) {
-    const updatedMessages = messages.filter((message) => message.id !== id);
-    setMessages(updatedMessages);
-  }
+  const handleDeleteMessage = (id) => {
+    setMessages((prevMessages) => prevMessages.filter((msg) => msg.id !== id));
+  };
 
-  function handleUpdateMessage(updatedMessageObj) {
-    const updatedMessages = messages.map((message) => {
-      if (message.id === updatedMessageObj.id) {
-        return updatedMessageObj;
-      } else {
-        return message;
-      }
-    });
-    setMessages(updatedMessages);
-  }
-
-  const displayedMessages = messages.filter((message) =>
-    message.body.toLowerCase().includes(search.toLowerCase())
-  );
+  const handleUpdateMessage = (updatedMessage) => {
+    setMessages((prevMessages) =>
+      prevMessages.map((msg) => (msg.id === updatedMessage.id ? updatedMessage : msg))
+    );
+  };
 
   return (
-    <main className={isDarkMode ? "dark-mode" : ""}>
-      <Header isDarkMode={isDarkMode} onToggleDarkMode={setIsDarkMode} />
-      <Search search={search} onSearchChange={setSearch} />
+    <div className={isDarkMode ? "dark-mode" : ""}>
+      <Header setIsDarkMode={setIsDarkMode} />
+      <Search />
       <MessageList
-        messages={displayedMessages}
-        currentUser={testUser}
-        onMessageDelete={handleDeleteMessage}
+        messages={messages}
+        onDeleteMessage={handleDeleteMessage}
         onUpdateMessage={handleUpdateMessage}
       />
       <NewMessage currentUser={testUser} onAddMessage={handleAddMessage} />
-    </main>
+    </div>
   );
 }
 
